@@ -6,8 +6,11 @@ import multiprocessing
 
 # TODO: object detection function
 def scan_image(frame):
-    # run AI on frame
-    # if object found, save frame and log result.
+    # run object detection on frame (or saved image if frame not working):
+
+    # if object(s) found, keep output image and remove input image. else, remove both. 
+
+
     print("we are in scan_image()! count: " + str(frame))
     return
 
@@ -19,8 +22,7 @@ if __name__ == '__main__':
 
     def birdIDer():
         imagesFolder = "saved_images"
-        x = 1
-        c = 0
+        x = 1; c = 0
 
         # Create an object to hold reference to livestream
         #cap = cv2.VideoCapture(0)
