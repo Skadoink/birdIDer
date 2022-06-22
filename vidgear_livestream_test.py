@@ -6,13 +6,24 @@ import multiprocessing
 
 # TODO: object detection function
 def scan_image(frame):
+    #imported libraries only for object detection:
+    from imageai.Classification.Custom import CustomImageClassification
+    import os
     # run object detection on frame (or saved image if frame not working):
+    execution_path = os.getcwd()
+    prediction = CustomImageClassification()
+    prediction.setModelTypeAsResNet50()
+    prediction.setModelPath("model_here!")
+    prediction.setJsonPath("bird_model_class.json")
+    prediction.loadModel(num_objects=4)
+    predictions, probabilities = prediction.predictImage(frame, result_count=4)
+    for eachPrediction, eachProbability in zip(predictions, probabilities): # output results for testing
+        print(eachPrediction , " : " , eachProbability)
 
-    # if object(s) found, keep output image and remove input image. else, remove both. 
+    # if object(s) found, keep output image and remove input image. else, remove both.
+    if(probabilities[0] > 60):
+        
 
-
-    print("we are in scan_image()! count: " + str(frame))
-    return
 
 
 if __name__ == '__main__':
@@ -22,7 +33,8 @@ if __name__ == '__main__':
 
     def birdIDer():
         imagesFolder = "saved_images"
-        x = 1; c = 0
+        x = 1
+        c = 0
 
         # Create an object to hold reference to livestream
         #cap = cv2.VideoCapture(0)
