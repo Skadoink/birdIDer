@@ -13,16 +13,15 @@ def scan_image(frame):
     execution_path = os.getcwd()
     prediction = CustomImageClassification()
     prediction.setModelTypeAsResNet50()
-    prediction.setModelPath("model_here!")
-    prediction.setJsonPath("bird_model_class.json")
+    prediction.setModelPath("model_ex-060_acc-0.969558.h5")
+    prediction.setJsonPath("model_class.json")
     prediction.loadModel(num_objects=4)
     predictions, probabilities = prediction.predictImage(frame, result_count=4)
     for eachPrediction, eachProbability in zip(predictions, probabilities): # output results for testing
         print(eachPrediction , " : " , eachProbability)
 
-    # if object(s) found, keep output image and remove input image. else, remove both.
-    if(probabilities[0] > 60):
-        
+    # if object(s) found, keep output image and remove input image. else, remove both:
+    
 
 
 
