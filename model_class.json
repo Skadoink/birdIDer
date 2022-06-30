@@ -1,12 +1,12 @@
 {
-    "0" : "chef",
-    "1" : "doctor",
-    "2" : "engineer",
-    "3" : "farmer",
-    "4" : "firefighter",
-    "5" : "judge",
+    "9" : "waiter",
     "6" : "mechanic",
+    "2" : "engineer",
+    "4" : "firefighter",
+    "0" : "chef",
+    "5" : "judge",
     "7" : "pilot",
     "8" : "police",
-    "9" : "waiter"
+    "3" : "farmer",
+    "1" : "doctor"
 }
