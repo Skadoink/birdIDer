@@ -5,6 +5,8 @@ import multiprocessing
 
 def scan_image(image_np, x):
     #imported libraries only for object detection:
+    import time
+    starttime = time.time()
     import numpy as np
     import tensorflow as tf
     import os
@@ -33,7 +35,7 @@ def scan_image(image_np, x):
     ckpt = tf.compat.v2.train.Checkpoint(model=detection_model)
     ckpt.restore(os.path.join("C:/Users/oskae/Documents/python/TensorFlow/workspace/training_demo/exported-models/my_model/checkpoint/", 'ckpt-0')).expect_partial()
 
-    @tf.function
+    #@tf.function
     def detect_fn(image):
         """Detect objects in image."""
 
@@ -50,10 +52,16 @@ def scan_image(image_np, x):
     image_np_expanded = np.expand_dims(image_np, axis=0)
 
     input_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
+    print("time taken before detections: " + str(time.time() - starttime))
     detections, predictions_dict, shapes = detect_fn(input_tensor)
+    #test print predictions
+    for key, val in predictions_dict.items():
+        print(key, "->", val)
 
     label_id_offset = 1
     image_np_with_detections = image_np.copy()
+
+    print("time taken before visualise boxes and labels: " + str(time.time() - starttime))
 
     viz_utils.visualize_boxes_and_labels_on_image_array(
           image_np_with_detections,
@@ -73,6 +81,7 @@ def scan_image(image_np, x):
     imagesFolder = "detected_images"
     filename = imagesFolder + "/image_" + str(x) + ".jpg"
     cv2.imwrite(filename, image_np_with_detections)  # save image
+    print("time taken for whole function: " + str(time.time() - starttime))
 
     #cv2.destroyAllWindows()
     # if object(s) found, keep output image and remove input image. else, remove both:
