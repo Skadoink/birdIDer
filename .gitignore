@@ -1,20 +1,4 @@
-# imageAI/idenprof
-# imageAI/traffic-mini.mp4
-# imageAI/traffic_mini_detected_1.avi
-# imageAI/yolo.h5
-# imageAI/saved_images
-# imageAI/count_to_60.mp4
-# imageAI/birds
-# imageAI/image.jpg
-# imageAI/model_59.h5
-# imageAI/idenprof_061-0.7933.h5
-# imageAI/model_ex-060_acc-0.969558.h5
-# imageAI/chef.jpg
-# imageAI/model_b.h5
-# imageAI/model_class_b.json
-# imageAI/House-sparrow.jpeg
-imageAI/
-.gitignore
+/imageAI
 /man_IDer/birds
 /man_IDer/detected_images
 /man_IDer/testfile.py
