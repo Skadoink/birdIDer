@@ -10,7 +10,6 @@ def detect_fn(image, detection_model):
     """Detect objects in image."""
     current_time = time.time()
     image, shapes = detection_model.preprocess(image)
-    print("time for preprocess: " + str(time.time() - current_time))
     current_time = time.time()
 
     detections = detection_model(image, training=False)
@@ -35,8 +34,7 @@ if __name__ == '__main__':
     import numpy as np
     import multiprocessing
     import time
-    import imageio 
-    starttime = time.time()
+    import imageio
 
     # Load our model
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging
@@ -66,7 +64,7 @@ if __name__ == '__main__':
     def scan_image(image_np, x):
         # imported libraries only for object detection:
         # run object detection on frame (or saved image if frame not working):
-        image_np_expanded = np.expand_dims(image_np, axis=0)
+        starttime = time.time()
 
         input_tensor = tf.convert_to_tensor(
             np.expand_dims(image_np, 0), dtype=tf.float32)
@@ -121,13 +119,14 @@ if __name__ == '__main__':
         imagesFolder = "saved_images"
         x = 1
         c = 0
+        starttime = time.time()
 
         # Create an object to hold reference to livestream
         #cap = cv2.VideoCapture(0)
         options = {"CAP_PROP_FPS": 1}
         cap = CamGear(source='https://www.youtube.com/watch?v=JhajwzEv1Fo',
                       stream_mode=True, logging=True, **options).start()
-
+        
         while True:
             image_np = cap.read()  # capture the frame from live video
             if(c % 30 == 0):  # every 30th frame
@@ -138,8 +137,9 @@ if __name__ == '__main__':
                 # p.start()
 
                 scan_image(image_np, x)
-
                 x += 1
+                #check we are saving one image every second:
+                print("saved image " + str(x) + " at " + str(time.time() - starttime)) 
             c += 1
 
     def main():
