@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # import libraries used only in main
     from vidgear.gears import CamGear
 
-    def birdIDer():
+    def stream_parser():
         imagesFolder = "saved_images"
         x = 0
         c = 0
@@ -126,6 +126,6 @@ if __name__ == '__main__':
             c += 1
 
     def main():
-        birdIDer()
+        stream_parser()
 
     main()
