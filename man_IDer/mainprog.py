@@ -21,12 +21,11 @@ def detect_fn(image, detection_model):
     image, shapes = detection_model.preprocess(image)
     current_time = time.time()
     detections = detection_model(image, training=False)
+    #print("Detections: " + str(detections))
     print("time for detections: " + str(time.time() - current_time))
-
     return detections, tf.reshape(shapes, [-1])
 
 
-# TODO adjust scan_image to accept queue for input, run constantly (while true), imports, and maybe more.
 def scan_image(q):
     # Load our model
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging
@@ -82,6 +81,12 @@ def scan_image(q):
                 min_score_thresh=.30,
                 agnostic_mode=False)
 
+            #print info about each detection above score threshold 
+            i = 0
+            while detections.get("detection_scores")[0][i] >= 0.3:
+                print("image" + str(count) + ": category: " + str(detections["detection_classes"][0][i]) + " probability: " + str(detections["detection_scores"][0][i]))
+                i += 1
+
             # Display output
             #cv2.imshow('object detection', cv2.resize(image_np_with_detections, (800, 600)))
 
@@ -111,7 +116,7 @@ if __name__ == '__main__':
 
         # Create an object to hold reference to livestream
         options = {"CAP_PROP_FPS": 1}
-        cap = CamGear(source='https://www.youtube.com/watch?v=JhajwzEv1Fo',
+        cap = CamGear(source='https://www.youtube.com/watch?v=3-UdOsBsyXQ',
                       stream_mode=True, logging=True, **options).start()
         q = Queue()
         p = Process(target=scan_image, args=(q,))
