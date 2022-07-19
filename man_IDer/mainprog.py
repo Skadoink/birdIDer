@@ -14,6 +14,18 @@ import imageio
 from multiprocessing import Queue
 from multiprocessing import Process
 
+#return list of category names
+def make_cats():
+    cats = []
+    cat_file = open("C:/Users/oskae/Documents/python/TensorFlow/workspace/training_demo/annotations/label_map.pbtxt", "r")
+    count = 2 #start at 2 because names are every 5th line from line 3. 
+    for line in cat_file:
+        count += 1
+        if count % 5 != 0:
+            continue
+        name = line[11:-2]
+        cats.append(name)
+    return cats
 
 # @tf.function
 def detect_fn(image, detection_model):
@@ -50,6 +62,9 @@ def scan_image(q):
 
     category_index = label_map_util.create_category_index_from_labelmap("C:/Users/oskae/Documents/python/TensorFlow/workspace/training_demo/annotations/label_map.pbtxt",
                                                                         use_display_name=True)
+
+    #make a list of the categories
+    cats = make_cats()
 
     # run object detection
     starttime = time.time()
