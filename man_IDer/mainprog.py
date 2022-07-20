@@ -1,6 +1,7 @@
 # Getting a frame every second for scanning with AI.
 # This allows the program to keep up with the live feed's pace
 # import libraries used in at least the child process:
+import datetime
 import tensorflow as tf
 import time
 import numpy as np
@@ -13,6 +14,8 @@ import os
 import imageio
 from multiprocessing import Queue
 from multiprocessing import Process
+import pandas as pd
+import csv
 
 #return list of category names
 def make_cats():
@@ -71,52 +74,56 @@ def scan_image(q):
     count = 0
 
     while True:
-        if q.empty():
+        while q.empty():
             time.sleep(0.01)  # prevent overly frequent checking
-        else:
-            currenttime = time.time()
-            count += 1
-            image_np = q.get()
-            input_tensor = tf.convert_to_tensor(
-                np.expand_dims(image_np, 0), dtype=tf.float32)
-            detections, shapes = detect_fn(input_tensor, detection_model)
 
-            label_id_offset = 1
-            image_np_with_detections = image_np.copy()
+        currenttime = time.time()
+        count += 1
+        image_np = q.get()
+        input_tensor = tf.convert_to_tensor(
+            np.expand_dims(image_np, 0), dtype=tf.float32)
+        detections, shapes = detect_fn(input_tensor, detection_model)
 
-            viz_utils.visualize_boxes_and_labels_on_image_array(
-                image_np_with_detections,
-                detections['detection_boxes'][0].numpy(),
-                (detections['detection_classes']
-                 [0].numpy() + label_id_offset).astype(int),
-                detections['detection_scores'][0].numpy(),
-                category_index,
-                use_normalized_coordinates=True,
-                max_boxes_to_draw=200,
-                min_score_thresh=.30,
-                agnostic_mode=False)
+        label_id_offset = 1
+        image_np_with_detections = image_np.copy()
 
-            #print info about each detection above score threshold 
-            i = 0
-            while detections.get("detection_scores")[0][i] >= 0.3:
-                print("image" + str(count) + ": category: " + str(detections["detection_classes"][0][i]) + " probability: " + str(detections["detection_scores"][0][i]))
-                i += 1
+        viz_utils.visualize_boxes_and_labels_on_image_array(
+            image_np_with_detections,
+            detections['detection_boxes'][0].numpy(),
+            (detections['detection_classes']
+                [0].numpy() + label_id_offset).astype(int),
+            detections['detection_scores'][0].numpy(),
+            category_index,
+            use_normalized_coordinates=True,
+            max_boxes_to_draw=200,
+            min_score_thresh=.30,
+            agnostic_mode=False)
 
-            # Display output
-            #cv2.imshow('object detection', cv2.resize(image_np_with_detections, (800, 600)))
+        #print info about each detection above score threshold 
+        i = 0
+        while detections.get("detection_scores")[0][i] >= 0.3:
+            image_name = "image" + str(count)
+            category_name = cats[int(detections["detection_classes"][0][i])]
+            probability = detections["detection_scores"][0][i]
+            print(image_name + ": species: " + category_name + " probability: " + str(probability))
+            with open("records.csv", "a", newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([datetime.datetime.now(), category_name, probability, image_name])
+    
+            i += 1
 
-            # save image with detections
-            imagesFolder = "programs/man_IDer/detected_images"
-            filename = imagesFolder + "/image_" + str(count) + ".jpg"
-            #cv2.imwrite(filename, image_np_with_detections)
-            imageio.imwrite(filename, image_np_with_detections)  # save image
-            print("time taken image processing: " +
-                  str(time.time() - currenttime))
-            # check we are saving one image every second:
-            print("attempt save image " + str(count) + " at " +
-                  str(time.time() - starttime))
+        # save image with detections
+        # this can eventually use filters to only save images with detections
+        imagesFolder = "programs/man_IDer/detected_images"
+        filename = imagesFolder + "/image_" + str(count) + ".jpg"
+        #cv2.imwrite(filename, image_np_with_detections)
+        imageio.imwrite(filename, image_np_with_detections)  # save image
+        print("time taken image processing: " +
+                str(time.time() - currenttime))
+        # check we are saving one image every second:
+        print("attempt save image " + str(count) + " at " +
+                str(time.time() - starttime))
 
-            # cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
@@ -131,7 +138,7 @@ if __name__ == '__main__':
 
         # Create an object to hold reference to livestream
         options = {"CAP_PROP_FPS": 1}
-        cap = CamGear(source='https://www.youtube.com/watch?v=3-UdOsBsyXQ',
+        cap = CamGear(source='https://www.youtube.com/watch?v=N609loYkFJo',
                       stream_mode=True, logging=True, **options).start()
         q = Queue()
         p = Process(target=scan_image, args=(q,))
