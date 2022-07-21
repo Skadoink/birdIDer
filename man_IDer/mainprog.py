@@ -104,7 +104,7 @@ def scan_image(q):
         while detections.get("detection_scores")[0][i] >= 0.3:
             image_name = "image" + str(count)
             category_name = cats[int(detections["detection_classes"][0][i])]
-            probability = detections["detection_scores"][0][i]
+            probability = (detections["detection_scores"][0][i]).numpy()
             print(image_name + ": species: " + category_name + " probability: " + str(probability))
             with open("records.csv", "a", newline='') as f:
                 writer = csv.writer(f)
