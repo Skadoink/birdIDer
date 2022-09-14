@@ -1,3 +1,5 @@
+Work on this has temporarily slowed while I'm busy with university and various other things. 
+
 A program to recognise birds seen on a live video feed. 
 
 Uses vidgear (specifically camgear) to interpret youtube livestream and access frames. 
